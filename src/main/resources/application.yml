@@ -19,7 +19,7 @@ spring:
           lob:
             non_contextual_creation: true
 
-  # Dependência no pom.xml para MySQL
+
 
   flyway:
     enabled: true
