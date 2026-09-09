@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head('Mesas')}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-grid-3x3-gap"></i> Mesas</h2>
+            <a th:href="@{/tables/new}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Nova Mesa
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-success">
+                    <div class="card-body text-center">
+                        <h4 class="text-success" th:text="${availableCount ?: 0}">0</h4>
+                        <p class="text-muted mb-0">Disponiveis</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-danger">
+                    <div class="card-body text-center">
+                        <h4 class="text-danger" th:text="${occupiedCount ?: 0}">0</h4>
+                        <p class="text-muted mb-0">Ocupadas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-warning">
+                    <div class="card-body text-center">
+                        <h4 class="text-warning" th:text="${reservedCount ?: 0}">0</h4>
+                        <p class="text-muted mb-0">Reservadas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                        <h4 class="text-primary" th:text="${totalTables ?: 0}">0</h4>
+                        <p class="text-muted mb-0">Total</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(tables)}" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p>Nenhuma mesa encontrada.</p>
+                </div>
+                <table th:unless="${#lists.isEmpty(tables)}" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Numero</th>
+                            <th>Capacidade</th>
+                            <th>Status</th>
+                            <th>Pedido Ativo</th>
+                            <th>Acoes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="table : ${tables}">
+                            <td th:text="${table.id}"></td>
+                            <td th:text="${table.tableNumber}"></td>
+                            <td th:text="${table.capacity + ' lugares'}"></td>
+                            <td>
+                                <span class="badge" th:text="${table.status}" th:class="'badge badge-status-' + ${table.status.name()}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${table.activeOrder != null}" th:text="'#' + ${table.activeOrder.orderId} + ' - ' + ${table.activeOrder.customerName}"></span>
+                                <span th:unless="${table.activeOrder != null}" class="text-muted">-</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <form th:if="${table.status.name() == 'AVAILABLE'}" th:action="@{/tables/{id}/occupy(id=${table.id})}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Ocupar">
+                                            <i class="bi bi-person-fill"></i>
+                                        </button>
+                                    </form>
+                                    <form th:if="${table.status.name() == 'AVAILABLE'}" th:action="@{/tables/{id}/reserve(id=${table.id})}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-outline-warning btn-sm" title="Reservar">
+                                            <i class="bi bi-bookmark-fill"></i>
+                                        </button>
+                                    </form>
+                                    <form th:if="${table.status.name() != 'AVAILABLE'}" th:action="@{/tables/{id}/free(id=${table.id})}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Liberar">
+                                            <i class="bi bi-unlock"></i>
+                                        </button>
+                                    </form>
+                                    <a th:href="@{/tables/{id}/edit(id=${table.id})}" class="btn btn-outline-warning btn-sm" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form th:action="@{/tables/{id}/delete(id=${table.id})}" method="post" style="display:inline" onsubmit="return confirm('Tem certeza?')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

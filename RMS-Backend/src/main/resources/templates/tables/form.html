@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head(${tableId != null ? 'Editar Mesa' : 'Nova Mesa'})}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-4">
+        <h2 class="mb-4">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <span th:text="${tableId != null ? 'Editar Mesa' : 'Nova Mesa'}"></span>
+        </h2>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/tables/save}" method="post" th:object="${table}">
+                    <input type="hidden" name="id" th:value="${tableId}">
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="tableNumber" class="form-label">Numero da Mesa *</label>
+                            <input type="text" class="form-control" id="tableNumber" th:field="*{tableNumber}" required maxlength="10">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="capacity" class="form-label">Capacidade *</label>
+                            <input type="number" class="form-control" id="capacity" th:field="*{capacity}" min="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" th:field="*{status}">
+                                <option value="AVAILABLE">Disponivel</option>
+                                <option value="OCCUPIED">Ocupada</option>
+                                <option value="RESERVED">Reservada</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Salvar
+                        </button>
+                        <a th:href="@{/tables}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

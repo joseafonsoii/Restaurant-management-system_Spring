@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head('Cardapio')}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-book"></i> Cardapio</h2>
+            <a th:href="@{/menu-items/new}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Novo Item
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(menuItems)}" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p>Nenhum item no cardapio.</p>
+                </div>
+                <table th:unless="${#lists.isEmpty(menuItems)}" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Preco</th>
+                            <th>Tempo Prep.</th>
+                            <th>Disponivel</th>
+                            <th>Acoes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${menuItems}">
+                            <td th:text="${item.id}"></td>
+                            <td th:text="${item.name}"></td>
+                            <td th:text="${item.category?.name}"></td>
+                            <td th:text="'AOA ' + ${#numbers.formatDecimal(item.price, 1, 2)}"></td>
+                            <td th:text="${item.preparationTime != null ? item.preparationTime + ' min' : '-'}"></td>
+                            <td>
+                                <span class="badge" th:class="${item.available ? 'bg-success' : 'bg-secondary'}"
+                                      th:text="${item.available ? 'Sim' : 'Nao'}"></span>
+                            </td>
+                            <td>
+                                <a th:href="@{/menu-items/{id}/edit(id=${item.id})}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/menu-items/{id}/delete(id=${item.id})}" method="post" style="display:inline" onsubmit="return confirm('Tem certeza?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

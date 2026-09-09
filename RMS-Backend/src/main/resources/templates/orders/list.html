@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head('Pedidos')}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-receipt"></i> Pedidos</h2>
+            <a th:href="@{/orders/new}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Novo Pedido
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(orders)}" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p>Nenhum pedido encontrado.</p>
+                </div>
+                <table th:unless="${#lists.isEmpty(orders)}" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Mesa</th>
+                            <th>Cliente</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Criado em</th>
+                            <th>Acoes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td th:text="${order.id}"></td>
+                            <td th:text="${order.table?.tableNumber}"></td>
+                            <td th:text="${order.customerName ?: '-'}"></td>
+                            <td th:text="'AOA ' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}"></td>
+                            <td>
+                                <span class="badge" th:text="${order.status}" th:class="'badge badge-status-' + ${order.status.name()}"></span>
+                            </td>
+                            <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form th:action="@{/orders/{id}/delete(id=${order.id})}" method="post" style="display:inline" onsubmit="return confirm('Tem certeza?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

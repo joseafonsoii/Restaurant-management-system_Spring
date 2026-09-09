@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="bi bi-shop"></i> RMS - Gestao de Restaurante
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}" th:classappend="${activeSection == 'dashboard'} ? 'active'">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/categories}" th:classappend="${activeSection == 'categories'} ? 'active'">
+                        <i class="bi bi-tags"></i> Categorias
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/menu-items}" th:classappend="${activeSection == 'menu-items'} ? 'active'">
+                        <i class="bi bi-book"></i> Cardapio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/tables}" th:classappend="${activeSection == 'tables'} ? 'active'">
+                        <i class="bi bi-grid-3x3-gap"></i> Mesas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/orders}" th:classappend="${activeSection == 'orders'} ? 'active'">
+                        <i class="bi bi-receipt"></i> Pedidos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/payments}" th:classappend="${activeSection == 'payments'} ? 'active'">
+                        <i class="bi bi-credit-card"></i> Pagamentos
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</html>

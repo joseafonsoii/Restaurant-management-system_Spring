@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head('Pagamentos')}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-credit-card"></i> Pagamentos</h2>
+            <a th:href="@{/payments/new}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Novo Pagamento
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-success">
+                    <div class="card-body text-center">
+                        <h4 class="text-success">AOA <span th:text="${#numbers.formatDecimal(totalRevenue ?: 0, 1, 2)}">0</span></h4>
+                        <p class="text-muted mb-0">Receita Total</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-info">
+                    <div class="card-body text-center">
+                        <h4 class="text-info">AOA <span th:text="${#numbers.formatDecimal(todayRevenue ?: 0, 1, 2)}">0</span></h4>
+                        <p class="text-muted mb-0">Receita Hoje</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                        <h4 class="text-primary" th:text="${totalTransactions ?: 0}">0</h4>
+                        <p class="text-muted mb-0">Transacoes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-danger">
+                    <div class="card-body text-center">
+                        <h4 class="text-danger" th:text="${failedTransactions ?: 0}">0</h4>
+                        <p class="text-muted mb-0">Falhas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(payments)}" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p>Nenhum pagamento encontrado.</p>
+                </div>
+                <table th:unless="${#lists.isEmpty(payments)}" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Pedido</th>
+                            <th>Cliente</th>
+                            <th>Mesa</th>
+                            <th>Valor</th>
+                            <th>Metodo</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Acoes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="payment : ${payments}">
+                            <td th:text="${payment.id}"></td>
+                            <td th:text="'#' + ${payment.orderId}"></td>
+                            <td th:text="${payment.orderSummary?.customerName ?: '-'}"></td>
+                            <td th:text="${payment.orderSummary?.tableNumber ?: '-'}"></td>
+                            <td th:text="'AOA ' + ${#numbers.formatDecimal(payment.amount, 1, 2)}"></td>
+                            <td th:text="${payment.method}"></td>
+                            <td>
+                                <span class="badge" th:text="${payment.status}" th:class="'badge badge-status-' + ${payment.status.name()}"></span>
+                            </td>
+                            <td th:text="${#temporals.format(payment.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <form th:if="${payment.status.name() == 'PENDING'}" th:action="@{/payments/{id}/process(id=${payment.id})}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Processar">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    </form>
+                                    <form th:if="${payment.status.name() == 'COMPLETED'}" th:action="@{/payments/{id}/refund(id=${payment.id})}" method="post" style="display:inline" onsubmit="return confirm('Tem certeza que deseja reembolsar?')">
+                                        <button type="submit" class="btn btn-outline-warning btn-sm" title="Reembolsar">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/payments/{id}/delete(id=${payment.id})}" method="post" style="display:inline" onsubmit="return confirm('Tem certeza?')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

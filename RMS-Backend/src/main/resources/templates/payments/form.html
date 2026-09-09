@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head('Novo Pagamento')}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-4">
+        <h2 class="mb-4">
+            <i class="bi bi-credit-card"></i> Novo Pagamento
+        </h2>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/payments/save}" method="post" th:object="${payment}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="orderId" class="form-label">Pedido *</label>
+                            <select class="form-select" id="orderId" th:field="*{orderId}" required>
+                                <option value="">Selecione um pedido...</option>
+                                <option th:each="order : ${unpaidOrders}" th:value="${order.id}" th:text="'#' + ${order.id} + ' - Mesa ' + ${order.table?.tableNumber} + ' - AOA ' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">Valor (AOA) *</label>
+                            <input type="number" class="form-control" id="amount" th:field="*{amount}" step="0.01" min="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="method" class="form-label">Metodo de Pagamento *</label>
+                            <select class="form-select" id="method" th:field="*{method}" required>
+                                <option value="">Selecione...</option>
+                                <option value="CASH">Dinheiro</option>
+                                <option value="CREDIT_CARD">Cartao de Credito</option>
+                                <option value="DEBIT_CARD">Cartao de Debito</option>
+                                <option value="PIX">PIX</option>
+                                <option value="EXPRESS">Express</option>
+                                <option value="PAYPAL">PayPal</option>
+                                <option value="BANK_TRANSFER">Transferencia Bancaria</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" th:field="*{status}">
+                                <option value="PENDING">Pendente</option>
+                                <option value="COMPLETED">Concluido</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Criar Pagamento
+                        </button>
+                        <a th:href="@{/payments}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

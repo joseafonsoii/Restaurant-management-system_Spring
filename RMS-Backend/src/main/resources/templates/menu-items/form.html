@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head(${itemId != null ? 'Editar Item' : 'Novo Item'})}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-4">
+        <h2 class="mb-4">
+            <i class="bi bi-book"></i>
+            <span th:text="${itemId != null ? 'Editar Item do Cardapio' : 'Novo Item do Cardapio'}"></span>
+        </h2>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/menu-items/save}" method="post" th:object="${menuItem}">
+                    <input type="hidden" name="id" th:value="${itemId}">
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="name" class="form-label">Nome *</label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" required maxlength="100">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="categoryId" class="form-label">Categoria *</label>
+                            <select class="form-select" id="categoryId" th:field="*{categoryId}" required>
+                                <option value="">Selecione...</option>
+                                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descricao</label>
+                        <textarea class="form-control" id="description" th:field="*{description}" rows="2"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="price" class="form-label">Preco (AOA) *</label>
+                            <input type="number" class="form-control" id="price" th:field="*{price}" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="preparationTime" class="form-label">Tempo de Preparacao (min)</label>
+                            <input type="number" class="form-control" id="preparationTime" th:field="*{preparationTime}" min="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="available" class="form-label">Disponivel</label>
+                            <select class="form-select" id="available" th:field="*{available}">
+                                <option th:value="true">Sim</option>
+                                <option th:value="false">Nao</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ingredients" class="form-label">Ingredientes (JSON)</label>
+                        <input type="text" class="form-control" id="ingredients" th:field="*{ingredients}" placeholder='["arroz", "feijao"]'>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tags" class="form-label">Tags (JSON)</label>
+                        <input type="text" class="form-control" id="tags" th:field="*{tags}" placeholder='["picante", "vegano"]'>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Salvar
+                        </button>
+                        <a th:href="@{/menu-items}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

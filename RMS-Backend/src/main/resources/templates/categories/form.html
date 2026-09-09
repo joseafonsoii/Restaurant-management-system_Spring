@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head(${categoryId != null ? 'Editar Categoria' : 'Nova Categoria'})}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-4">
+        <h2 class="mb-4">
+            <i class="bi bi-tags"></i>
+            <span th:text="${categoryId != null ? 'Editar Categoria' : 'Nova Categoria'}"></span>
+        </h2>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/categories/save}" method="post" th:object="${category}">
+                    <input type="hidden" name="id" th:value="${categoryId}">
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nome *</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}" required maxlength="50">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descricao</label>
+                        <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="displayOrder" class="form-label">Ordem de Exibicao</label>
+                        <input type="number" class="form-control" id="displayOrder" th:field="*{displayOrder}" min="0">
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Salvar
+                        </button>
+                        <a th:href="@{/categories}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

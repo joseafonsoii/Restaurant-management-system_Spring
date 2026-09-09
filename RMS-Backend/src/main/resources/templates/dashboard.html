@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container-fluid py-4">
+        <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h2>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card card-dashboard border-primary">
+                    <div class="card-body text-center">
+                        <i class="bi bi-receipt fs-1 text-primary"></i>
+                        <h3 class="mt-2" th:text="${totalOrders ?: 0}">0</h3>
+                        <p class="text-muted mb-0">Total Pedidos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-dashboard border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock-history fs-1 text-success"></i>
+                        <h3 class="mt-2" th:text="${activeOrders ?: 0}">0</h3>
+                        <p class="text-muted mb-0">Pedidos Ativos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-dashboard border-warning">
+                    <div class="card-body text-center">
+                        <i class="bi bi-grid-3x3-gap fs-1 text-warning"></i>
+                        <h3 class="mt-2" th:text="${availableTables ?: 0}">0</h3>
+                        <p class="text-muted mb-0">Mesas Disponiveis</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-dashboard border-info">
+                    <div class="card-body text-center">
+                        <i class="bi bi-currency-dollar fs-1 text-info"></i>
+                        <h3 class="mt-2" th:text="'AOA ' + ${#numbers.formatDecimal(dailyRevenue ?: 0, 1, 2)}">0</h3>
+                        <p class="text-muted mb-0">Receita Hoje</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Orders and Tables Status -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="bi bi-receipt"></i> Pedidos Ativos</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(activeOrdersList)}" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>Nenhum pedido ativo no momento.</p>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(activeOrdersList)}">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Mesa</th>
+                                        <th>Cliente</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="order : ${activeOrdersList}">
+                                        <td th:text="${order.id}"></td>
+                                        <td th:text="${order.table?.tableNumber}"></td>
+                                        <td th:text="${order.customerName ?: 'Sem nome'}"></td>
+                                        <td th:text="'AOA ' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}"></td>
+                                        <td>
+                                            <span class="badge" th:text="${order.status}" th:class="'badge badge-status-' + ${order.status.name()}"></span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> Status das Mesas</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="table : ${tablesList}" class="d-flex justify-content-between align-items-center mb-2 p-2 rounded"
+                             th:style="${table.status.name() == 'AVAILABLE' ? 'background-color: #d1e7dd;' : (table.status.name() == 'OCCUPIED' ? 'background-color: #f8d7da;' : 'background-color: #fff3cd;')}">
+                            <div>
+                                <strong th:text="'Mesa ' + ${table.tableNumber}"></strong>
+                                <small class="text-muted" th:text="' (' + ${table.capacity} + ' lugares)'"></small>
+                            </div>
+                            <span class="badge" th:text="${table.status}" th:class="'badge badge-status-' + ${table.status.name()}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>
